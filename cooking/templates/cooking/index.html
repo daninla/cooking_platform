@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load blog_tags %}
+
+{% block main %}
+<h2>Кулинарный портал</h2>
+<div class="d-flex justify-content-between">
+    <div class="col-3">
+    {% get_all_categories as categories %}   
+    {% for c in categories %}
+    {% include 'cooking/components/categorie_buttons.html' %}
+    {% endfor %}
+</div>
+
+<div class="col-8">
+{% for p in posts%}
+{% include 'cooking/components/posts.html' %}
+{% endfor %}
+</div>
+
+
+{% endblock main %}

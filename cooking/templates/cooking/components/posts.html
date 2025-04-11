@@ -1,0 +1,6 @@
+
+    <div class="card text-center"><div class="card-header">{{p.category}}</div>
+        <div class="card-body"><h5 class="card-title">{{p.title}}</h5><p class="card-text">{{p.content | truncatewords:30}}</p><a href={{p.get_absolute_url}} class="btn btn-primary">перейти</a></div>
+        <div class="card-footer text-muted">{{p.created_at}}</div>
+    </div>
+
