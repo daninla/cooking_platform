@@ -7,9 +7,9 @@ urlpatterns = [
     path('', index, name='index'),
     path('category/<int:pk>/',category_list, name='category_list'),
     path('post/<int:pk>/',post_detail, name='post_detail'),
-
 ]
 
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
