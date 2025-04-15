@@ -7,9 +7,11 @@ urlpatterns = [
     path('', index, name='index'),
     path('category/<int:pk>/',category_list, name='category_list'),
     path('post/<int:pk>/',post_detail, name='post_detail'),
-    path('add_artical/',add_post, name='add')
+    path('add_artical/',add_post, name='add'),
+    path('login/',user_login, name='user_login'),
+    path('logout/',user_logout, name='user_logout')
 ]
-
+ 
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)

@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from .models import Category,Post
 from django.db.models import F
-from .forms import PostAddForm
+from .forms import PostAddForm,LoginForm 
+from django.contrib.auth import login, logout
 
 def index(request):
     posts = Post.objects.all()
@@ -35,8 +36,12 @@ def post_detail(request, pk):
 
 def add_post(request):
     if request.method == "POST":
-        pass
-    else:
+        form = PostAddForm(request.POST,request.FILES)
+        if form.is_valid():
+            post = Post.objects.create(**form.cleaned_data)
+            post.save()
+            return redirect('post_detail', post.pk)
+    else: 
         form = PostAddForm()
 
     context = {
@@ -44,3 +49,25 @@ def add_post(request):
         'title': 'Добавить статью'
     }
     return render(request, 'cooking/article_add_form.html', context)
+
+
+def user_login(request):
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request,user)
+            return redirect('index')
+    else:
+        form = LoginForm()
+        
+    context = {
+        'title':'Авторизация пользователя',
+        'form':form
+    }
+    return render(request,'cooking/login_form.html', context)
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('index')
