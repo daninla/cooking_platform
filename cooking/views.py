@@ -3,14 +3,17 @@ from .models import Category,Post
 from django.db.models import F
 from .forms import PostAddForm,LoginForm, RegistrationForm
 from django.contrib.auth import login, logout
+from django.contrib import messages
+from django.views.generic import ListView,DetailView,CreateView,DeleteView,UpdateView
+from django.urls import reverse_lazy
 
-def index(request):
-    posts = Post.objects.all()
-    context = {
-        'title':'Главная страница',
-        'posts':posts,
-    }
-    return render(request,'cooking/index.html',context)
+
+class Index(ListView):
+    model = Post
+    context_object_name = 'posts'
+    template_name = 'cooking/index.html'
+    extra_context = {'title':'Главная страница'}
+
 
 def category_list(request,pk):
     posts = Post.objects.filter(category_id = pk)
@@ -21,34 +24,37 @@ def category_list(request,pk):
     return render(request,'cooking/index.html',context)
 
 
+
 def post_detail(request, pk):
-    """Страничка статьи"""
     article = Post.objects.get(pk=pk)
     Post.objects.filter(pk=pk).update(watched = F('watched')+1)
-    ext_post = Post.objects.all().order_by('-watched')[:4]
+    ext_post = Post.objects.all().exclude(pk=pk).order_by('-watched')[:5]
     context = {
-        'title': article.title,
-        'post': article,
-        'ext_posts':ext_post,
-    }
+    'title': article.title,
+    'post': article,
+    'ext_posts':ext_post,
+   }
     return render(request,'cooking/article_detail.html',context)
 
 
-def add_post(request):
-    if request.method == "POST":
-        form = PostAddForm(request.POST,request.FILES)
-        if form.is_valid():
-            post = Post.objects.create(**form.cleaned_data)
-            post.save()
-            return redirect('post_detail', post.pk)
-    else: 
-        form = PostAddForm()
+class AddPost(CreateView):
+    form_class = PostAddForm
+    template_name = 'cooking/article_add_form.html'
+    extra_context = { 'title': 'Добавить статью'}
 
-    context = {
-        'form': form,
-        'title': 'Добавить статью'
-    }
-    return render(request, 'cooking/article_add_form.html', context)
+
+class PostUpdate(UpdateView):
+    model = Post
+    form_class = PostAddForm
+    template_name = 'cooking/article_add_form.html'
+
+
+class PostDelete(DeleteView):
+        model = Post
+        success_url = reverse_lazy('index')
+        template_name = 'cooking/post_delete.html'
+        context_object_name = 'post'
+
 
 
 def user_login(request):
@@ -57,6 +63,7 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request,user)
+            messages.success(request,'Вы успешно вошли в аккаунт')
             return redirect('index')
     else:
         form = LoginForm()
