@@ -10,10 +10,12 @@ urlpatterns = [
     path('post/<int:pk>/update/',PostUpdate.as_view(), name='post_update'),
     path('post/<int:pk>/delete/',PostDelete.as_view(), name='post_delete'),
     path('category/<int:pk>/',category_list, name='category_list'),
-    path('post/<int:pk>/', post_detail, name='post_detail'),
+    path("search/", SearchResalt.as_view(), name="search"),
+    path('post/<int:pk>/', PostDetail.as_view(), name='post_detail'),
     path('login/',user_login, name='user_login'),
     path('logout/',user_logout, name='user_logout'),
     path('register/',register, name='register_user'),
+    path('add_comment/<int:post_id>/',add_comment, name='add_comment'),
 ]
  
 

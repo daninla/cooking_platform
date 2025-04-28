@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
-from .models import Category,Post
-from django.db.models import F
-from .forms import PostAddForm,LoginForm, RegistrationForm
+from .models import Category,Post,Comment
+from django.db.models import F,Q
+from .forms import PostAddForm,LoginForm, RegistrationForm,CommentForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.views.generic import ListView,DetailView,CreateView,DeleteView,UpdateView
@@ -15,26 +15,25 @@ class Index(ListView):
     extra_context = {'title':'Главная страница'}
 
 
-def category_list(request,pk):
-    posts = Post.objects.filter(category_id = pk)
-    context = {
-        'title':posts[0].category,
-        'posts':posts,
-    }
-    return render(request,'cooking/index.html',context)
+class PostDetail(DetailView):
+    model = Post
+    template_name = 'cooking/article_detail.html'
+    context_object_name = 'post'
+    pk_url_kwarg = 'pk'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = Post.objects.get(pk=self.kwargs['pk'])
+        Post.objects.filter(pk=self.object.pk).update(watched=F('watched')+ 1)
 
+        context['ext_posts'] = Post.objects.all().exclude(pk=self.object.pk).order_by('-watched')[:5]
+        context['title'] = self.object.title
+        context['comments'] = Comment.objects.filter(post=post)
 
-def post_detail(request, pk):
-    article = Post.objects.get(pk=pk)
-    Post.objects.filter(pk=pk).update(watched = F('watched')+1)
-    ext_post = Post.objects.all().exclude(pk=pk).order_by('-watched')[:5]
-    context = {
-    'title': article.title,
-    'post': article,
-    'ext_posts':ext_post,
-   }
-    return render(request,'cooking/article_detail.html',context)
+        if self.request.user.is_authenticated:
+            context['comment_form'] = CommentForm
+
+        return context
 
 
 class AddPost(CreateView):
@@ -55,6 +54,35 @@ class PostDelete(DeleteView):
         template_name = 'cooking/post_delete.html'
         context_object_name = 'post'
 
+
+class SearchResalt(Index):
+    def get_queryset(self):
+        word = self.request.GET.get('q')
+        posts = Post.objects.filter(
+            Q(title__icontains=word) | Q(content__icontains=word)
+        )
+        return posts
+
+
+def add_comment(request,post_id):
+    form = CommentForm(data=request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.post = Post.objects.get(pk=post_id)
+        comment.save()
+        messages.success(request,'Коментарий добавлен')
+    return redirect('post_detail',post_id)
+
+
+
+def category_list(request,pk):
+    posts = Post.objects.filter(category_id = pk)
+    context = {
+        'title':posts[0].category,
+        'posts':posts,
+    }
+    return render(request,'cooking/index.html',context)
 
 
 def user_login(request):

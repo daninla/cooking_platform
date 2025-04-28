@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post,Comment
 from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 from django.contrib.auth.models import User
 
@@ -38,3 +38,9 @@ class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Пароль'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Подтвердите пароль'}))
 
+
+class CommentForm(forms.ModelForm):
+      class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {'text':forms.TextInput(attrs={'class':'form-control','placeholder':'Ваш коментарий'})}
