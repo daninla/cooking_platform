@@ -5,8 +5,11 @@
 <div class="d-flex justify-content-between"><div class="col-8">
     <div class="card"><div class="card-header d-flex justify-content-between">{{post.category}}
         <div>
+            {% if request.user == post.author%}
             <a href="{% url 'post_delete' post.pk %}" class="btn btn-dark">Удалить</a>
             <a href="{% url 'post_update' post.pk %}" class="btn btn-dark">Изменить</a>
+            {% endif %}
+
             <a href="{% url 'category_list' post.category.pk %}" class="btn btn-dark">Назад</a>
         </div>
     </div>
@@ -36,7 +39,7 @@
     </form>
     {%endif%}
     {% for comment in comments %}
-    <div class="card mt-2"><h5 class="card-header">Какой то человек</h5>
+    <div class="card mt-2"><h5 class="card-header">{{post.author}}</h5>
         <div class="card-body">
             <p class="card-text">{{comment}}</p>
         </div>

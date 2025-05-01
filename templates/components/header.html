@@ -31,7 +31,7 @@
                                     Здравствуйте {{request.user.name}}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="#!">Моя страница</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'profile' request.user.pk %}">Моя страница</a></li>
                                     <li><a class="dropdown-item" href="{% url 'add' %}">Добавить статью</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{%url 'user_logout' %}">Выход</a></li>

@@ -6,6 +6,8 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.views.generic import ListView,DetailView,CreateView,DeleteView,UpdateView
 from django.urls import reverse_lazy
+from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordChangeView
 
 
 class Index(ListView):
@@ -40,6 +42,10 @@ class AddPost(CreateView):
     form_class = PostAddForm
     template_name = 'cooking/article_add_form.html'
     extra_context = { 'title': 'Добавить статью'}
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
 class PostUpdate(UpdateView):
@@ -122,3 +128,17 @@ def register(request):
         'form':form,
     }
     return render(request,'cooking/register.html',context)
+
+
+def profile(request,user_id):
+    user = User.objects.get(pk=user_id)
+    posts = Post.objects.filter(author=user)
+    context = {
+        'user':user,
+        'posts':posts
+    }
+    return render(request,'cooking/profile.html',context)
+
+
+class UserChangePassword(PasswordChangeView):
+    success_url = reverse_lazy('index')

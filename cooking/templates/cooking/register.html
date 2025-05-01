@@ -7,7 +7,7 @@
         <div class="card-body">
             <form method="POST">  <!-- Форма должна быть внутри <form> -->
                 {% csrf_token %}
-                {% include 'component/errors_form.html' %}
+                {% include 'components/errors_form.html' %}
                 {{ form.as_p }}  <!-- Это рендерит поля формы -->
                 <button class="btn btn-dark" type="submit">Регистрация</button>
             </form>
