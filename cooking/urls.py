@@ -2,6 +2,12 @@ from .views import *
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView
+)
+
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
@@ -18,6 +24,16 @@ urlpatterns = [
     path('register/',register, name='register_user'),
     path('add_comment/<int:post_id>/',add_comment, name='add_comment'),
     path('profile/<int:user_id>/',profile, name='profile'),
+
+    #API
+    path('post/api/', CookingAPI.as_view(),name='cookingApi'),
+    path('post/api/<int:pk>', CookingAPIDetail.as_view(),name='cookingApiDetail'),
+    path('post/api/', CookingCategoryAPI.as_view(),name='cookingCategoryApi'),
+    path('post/api/<int:pk>', CookingCategoryAPIDetail.as_view(),name='cookingCategoryApiDetail'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+
 ]
  
 

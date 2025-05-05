@@ -8,7 +8,9 @@ from django.views.generic import ListView,DetailView,CreateView,DeleteView,Updat
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordChangeView
-
+from .serializers import PostSerializer,CategorySerializer
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 
 class Index(ListView):
     model = Post
@@ -142,3 +144,24 @@ def profile(request,user_id):
 
 class UserChangePassword(PasswordChangeView):
     success_url = reverse_lazy('index')
+
+
+class CookingAPI(ListAPIView):
+    queryset = Post.objects.filter(is_published = True)
+    serializer_class = PostSerializer
+
+
+class CookingAPIDetail(RetrieveAPIView):
+    queryset = Post.objects.filter(is_published = True)
+    serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
+
+class CookingCategoryAPI(ListAPIView):
+    queryset = Category.objects.filter(is_published = True)
+    serializer_class = CategorySerializer
+
+
+class CookingCategoryAPIDetail(RetrieveAPIView):
+    queryset = Category.objects.filter(is_published = True)
+    serializer_class = CategorySerializer
+
